@@ -1,0 +1,93 @@
+#include <Servo.h>
+#include <SoftwareSerial.h>
+
+const int pinTrigger = 7;   // Sensor ultrassônico
+const int pinEcho = 6;      // Sensor ultrassônico
+const int pinPIR = 13;      // Sensor PIR (Lixeira Cheia)
+const int pinLED = 3;       // LED
+const int pinServo = 9;     // Servomotor
+
+SoftwareSerial bt(11, 10);  // Comunicação Bluetooth
+Servo servoMotor;
+
+bool isTampaAberta = false;  // Tampa
+bool lixeiraCheia = false;    //lixeira
+unsigned long ledOnTime = 0; // Tempo em que o LED foi aceso
+const unsigned long ledDuration = 5000; // Duração do LED aceso
+
+void setup() {
+  pinMode(pinTrigger, OUTPUT);
+  pinMode(pinEcho, INPUT);
+  pinMode(pinPIR, INPUT);
+  pinMode(pinLED, OUTPUT);
+  
+  Serial.begin(9600);
+  bt.begin(9600); // Inicializa o módulo Bluetooth
+  
+  servoMotor.attach(pinServo);
+  servoMotor.write(0); // Fecha a tampa inicialmente
+}
+
+void loop() {
+  long tempoRetorno, distanciaMedida;
+
+  // Distância com o sensor ultrassônico
+  digitalWrite(pinTrigger, LOW);
+  delayMicroseconds(4);
+  digitalWrite(pinTrigger, HIGH);
+  delayMicroseconds(15);
+  digitalWrite(pinTrigger, LOW);
+
+  tempoRetorno = pulseIn(pinEcho, HIGH);
+  distanciaMedida = (tempoRetorno / 2) * 0.0343;
+
+  //  lixeira está cheia
+  int estadoPIR = digitalRead(pinPIR);
+  if (estadoPIR == HIGH) {
+    lixeiraCheia = true; // Atualiza o estado da lixeira
+    digitalWrite(pinLED, HIGH); // Acende o LED
+    ledOnTime = millis(); // tempo do LED aceso
+    Serial.println("Lixeira cheia! LED aceso.");
+  } else if (estadoPIR == LOW && lixeiraCheia) {
+    lixeiraCheia = false; 
+    Serial.println("Lixeira não cheia.");
+  }
+
+  // Verifica se o LED deve ser apagado
+  if (digitalRead(pinLED) == HIGH && (millis() - ledOnTime >= ledDuration)) {
+    digitalWrite(pinLED, LOW); // Apaga o LED após o tempo definido
+    Serial.println("LED apagado após o tempo.");
+  }
+
+  // Verifica comandos via Bluetooth
+  if (bt.available()) {
+    char comando = bt.read();
+    Serial.print("Comando recebido: ");
+    Serial.println(comando);
+
+    if (comando == '1' && !isTampaAberta) { // comando '1', abre a tampa
+      servoMotor.write(180);
+      isTampaAberta = true; // 
+      delay(5000);          // Tampa aberta por 5 segundos
+      servoMotor.write(0);
+      delay(1000);          
+      isTampaAberta = false; // Nova abertura
+      bt.println("Tampa aberta via Bluetooth!");
+      Serial.println("Tampa aberta via Bluetooth.");
+    }
+  }
+
+  // Se alguém se aproximar (distância menor que 20 cm) e a tampa não estiver aberta
+  if (distanciaMedida < 20 && !isTampaAberta) {
+    servoMotor.write(180);     // Abre a tampa
+    isTampaAberta = true;     
+    Serial.println("Tampa aberta pelo sensor ultrassônico!");
+    delay(5000);               // Tampa aberta por 5 segundos
+    servoMotor.write(0);       // Fecha a tampa
+    isTampaAberta = false;     // Permite nova abertura
+    Serial.println("Tampa fechada.");
+  }
+
+  delay(200); // Evitar leituras excessivas
+}
+
