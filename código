@@ -7,13 +7,13 @@ const int pinoPIR = 13;      // Sensor PIR (Detectar resíduo)
 const int pinoLED = 3;       // LED
 const int pinoServo = 9;     // Servomotor
 
-SoftwareSerial bt(11, 10);  // Comunicação Bluetooth
+SoftwareSerial bt(11, 10);  
 Servo servoMotor;
 
-bool TampaAberta = false;  // Tampa
-bool  detectarResiduo = false;    //lixeira
-unsigned long Time = 0; // Tempo em que o LED foi aceso
-const unsigned long ledDuracao = 5000; // Duração do LED aceso
+bool TampaAberta = false;  
+bool  detectarResiduo = false;    
+unsigned long Time = 0; 
+const unsigned long ledDuracao = 5000; 
 
 void setup() {
   pinMode(pinosensor, OUTPUT);
@@ -22,10 +22,10 @@ void setup() {
   pinMode(pinoLED, OUTPUT);
   
   Serial.begin(9600);
-  bt.begin(9600); // Inicializa o módulo Bluetooth
+  bt.begin(9600); 
   
   servoMotor.attach(pinoServo);
-  servoMotor.write(0); // Fecha a tampa inicialmente
+  servoMotor.write(0); 
 }
 
 void loop() {
@@ -44,9 +44,9 @@ void loop() {
   //  lixeira detectou resíduo
   int estadoPIR = digitalRead(pinoPIR);
   if (estadoPIR == HIGH) {
-    detectarResiduo = true; // Atualiza o estado da lixeira
-    digitalWrite(pinoLED, HIGH); // Acende o LED
-    Time = millis(); // tempo do LED aceso
+    detectarResiduo = true; 
+    digitalWrite(pinoLED, HIGH); 
+    Time = millis();
     Serial.println("Lixeira detectou resíduo ! LED aceso.");
   } else if (estadoPIR == LOW &&  detectarResiduo) {
     detectarResiduo = false; 
@@ -55,7 +55,7 @@ void loop() {
 
   // Verifica se o LED deve ser apagado
   if (digitalRead(pinoLED) == HIGH && (millis() - Time >= ledDuracao)) {
-    digitalWrite(pinoLED, LOW); // Apaga o LED após o tempo definido
+    digitalWrite(pinoLED, LOW); 
     Serial.println("LED apagado após o tempo.");
 
   }
@@ -77,10 +77,10 @@ void loop() {
     Serial.print("Comando recebido: ");
     Serial.println(comando);
 
-    if (comando == '1' && !TampaAberta) { // comando '1', abre a tampa
+    if (comando == '1' && !TampaAberta) { 
       servoMotor.write(180);
-      TampaAberta = true; // 
-      delay(5000);          // Tampa aberta por 5 segundos
+      TampaAberta = true; 
+      delay(5000);          
       servoMotor.write(0);
       delay(1000);          
       TampaAberta = false; // Nova abertura
@@ -91,12 +91,12 @@ void loop() {
 
   // Se alguém se aproximar (distância menor que 20 cm) e a tampa não estiver aberta
   if (distanciaMedida < 20 && !TampaAberta) {
-    servoMotor.write(180);     // Abre a tampa
+    servoMotor.write(180);     
     TampaAberta = true;     
     Serial.println("Tampa aberta pelo sensor ultrassônico!");
-    delay(5000);               // Tampa aberta por 5 segundos
-    servoMotor.write(0);       // Fecha a tampa
-    TampaAberta = false;     // Permite nova abertura
+    delay(5000);              
+    servoMotor.write(0);     
+    TampaAberta = false;     
     Serial.println("Tampa fechada.");
   }
 
