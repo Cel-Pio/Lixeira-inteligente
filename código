@@ -10,8 +10,8 @@ const int pinoServo = 9;     // Servomotor
 SoftwareSerial bt(11, 10);  // Comunicação Bluetooth
 Servo servoMotor;
 
-bool TampaAberta = false;  
-bool  detectarResiduo = false;    
+bool TampaAberta = false;  // Tampa
+bool  detectarResiduo = false;    //lixeira
 unsigned long Time = 0; // Tempo em que o LED foi aceso
 const unsigned long ledDuracao = 5000; // Duração do LED aceso
 
@@ -57,7 +57,19 @@ void loop() {
   if (digitalRead(pinoLED) == HIGH && (millis() - Time >= ledDuracao)) {
     digitalWrite(pinoLED, LOW); // Apaga o LED após o tempo definido
     Serial.println("LED apagado após o tempo.");
+
   }
+
+  // Criando a string para enviar via Bluetooth e monitor serial
+  String lixeira = "Distância: " + String(distanciaMedida) + " cm, ";
+  lixeira +=  detectarResiduo ? "Lixeira: detectou resíduo" : "Lixeira: não detectou resíduo";
+
+  // Enviar a string pelo Bluetooth
+  bt.println(lixeira);
+  
+  // Para o monitor serial
+  Serial.println(lixeira);
+
 
   // Verifica comandos via Bluetooth
   if (bt.available()) {
