@@ -26,17 +26,17 @@ Esquema de Conexões
 •	GND: Conecte ao GND do Arduino.
 Lógica do Código
 •	Configuração Inicial (setup):
-•	pinMode(ultrassonicoTrigger, OUTPUT); e pinMode(sensorEcho, INPUT); configuram os pinos do sensor ultrassônico.
-•	pinMode(sensorPir, INPUT); configura o pino do sensor PIR.
-•	pinMode(LED, OUTPUT); configura o pino do LED.
+•	pinMode(pinosensor, OUTPUT); e pinMode(pinoEcho, INPUT); configuram os pinos do sensor ultrassônico.
+•	pinMode(pinoPIR, INPUT); configura o pino do sensor PIR.
+•	pinMode(pinoLED, OUTPUT); configura o pino do LED.
 •	Serial.begin(9600); e bt.begin(9600); inicializam a comunicação serial e Bluetooth.
 •	Leitura da Distância (loop):
-•	O código envia um pulso para o pino de Trigger do sensor ultrassônico (digitalWrite(ultrassonicoTrigger, HIGH);), e calcula a distância com base no tempo de retorno do pulso (distanciaMedida = (tempoRetorno / 2) * 0.0343;).
+•	O código envia um pulso para o pino de Trigger do sensor ultrassônico (digitalWrite(pinosensor, HIGH);), e calcula a distância com base no tempo de retorno do pulso (distanciaMedida = (tempoRetorno / 2) * 0.0343;).
 •	Verificação do Estado da Lixeira:
-•	O sensor PIR verifica se a lixeira está cheia. Se o estado do PIR for HIGH, a lixeira é considerada cheia (lixeiraCheia = true;), o LED acende e o tempo em que o LED foi aceso é registrado.
-•	Se o PIR retorna a LOW e a lixeira estava cheia, o estado é atualizado para não cheia.
+•	O sensor PIR detecta o resíduo na lixeira. Se o estado do PIR for HIGH, Lixeira detectou resíduo a ( detectarResiduo = true;), o LED acende e o tempo em que o LED foi aceso é registrado.
+•	Se o PIR retorna a LOW e a Lixeira não detectou resíduo, o estado é atualizado para não detectou resíduo.
 •	Controle do LED:
-•	O LED permanece aceso enquanto a lixeira estiver cheia. Após 5 segundos (ledAcesa), se a lixeira ainda estiver cheia, o LED é apagado.
+•	Quando detectar o resíduo O LED permanece aceso por 5 segundos.
 •	Comunicação Bluetooth:
 •	O sistema cria uma string com a distância medida e o estado da lixeira, que é enviada via Bluetooth e impressa no monitor serial.
 •	Recepção de Comandos:
