@@ -1,7 +1,7 @@
 # Lixeira-inteligente
 Objetivo:
 
-O objetivo deste projeto é uma lixeira inteligente utilizando a plataforma Arduino, que facilita o descarte de resíduos de forma prática e higiênica. A lixeira é equipada com sensores que detectam a proximidade do usuário, levanta a tampa automaticamente. O projeto foi realizado com 01 Arduino,  01 Sensor de nível ultrassônico, 01 Sensor de presença, 02 atuadores: servo motor ; LED com 2 pontas e o módulo Bluetooth.
+O objetivo deste projeto é uma lixeira inteligente utilizando a plataforma Arduino, que facilita o descarte de resíduos de forma prática e higiênica. A lixeira é equipada com sensores que detectam a proximidade do usuário, levanta a tampa automaticamente e o led acende quando detectar resíduos. O projeto foi realizado com 01 Arduino,  01 Sensor de nível ultrassônico, 01 Sensor de presença, 02 atuadores: servo motor ; LED com 2 pontas e o módulo Bluetooth.
 Esquema de Conexões
 •	Sensor Ultrassônico (HC-SR04):
 •	Trigger (Pino 7): Conecte ao pino digital 7 do Arduino.
